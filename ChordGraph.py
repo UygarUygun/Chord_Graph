@@ -156,6 +156,7 @@ class ChordGraph():
 	def visualize(self, node_size=250, node_color="tab:red", y_offset=0.005, plot_title=""):
 
 		nodeCountsAtIndex = [0] * len(list(self.G.nodes))
+		# edgeColors = list(dict((tuple(e[0],e[1]): int(e[2]['weight']))) for e in list(self.G.edges(data=True)))
 		nodes = list(self.G.nodes)
 		print(list(self.G.nodes(data=True)))
 		print(self.nodes)
@@ -188,7 +189,7 @@ class ChordGraph():
 		)
 		nx.draw_networkx_edges(
 			self.G, pos, nodelist=self.nodes, alpha=0.5,
-			width=6, node_size=node_size*2
+			width=1, node_size=node_size*2
 		)
 		print('DEGREES')
 		print(dict(self.G.in_degree))
