@@ -36,14 +36,21 @@ if TESTMODE:
 	testG4.chord_parser(chs4)
 	testG5.chord_parser(chs5)
 
-	testG1.visualize()
-	testG2.visualize(node_color="tab:gray")
-	testG3.visualize()
-	testG4.visualize()
-	testG5.visualize()
+	# testG1.visualize(plot_title="testg1")
+	# testG2.visualize(node_color="tab:gray")
+	# testG3.visualize()
+	# testG4.visualize()
+	# testG5.visualize()
 
 	temp1 = testG1.combine_graphs(testG2)
-	temp1.visualize()
+	temp1.visualize(plot_title="1 temp1")
+	temp1 = temp1.combine_graphs(testG2)
+	temp1.visualize(plot_title="2 temp1")
+	temp1 = temp1.combine_graphs(testG2)
+	temp1.visualize(plot_title="3 temp1")
+	temp1 = temp1.combine_graphs(testG2)
+	temp1.visualize(plot_title="4 temp1")
+
 	temp2 = temp1.combine_graphs(testG3)
 	temp2.visualize()
 	temp3 = temp2.combine_graphs(testG4)
@@ -69,7 +76,6 @@ if not TESTMODE:
 	# Z.add_weighted_edges_from(e3)
 	# e4 = [('b', 'c', 2.0)]
 	# Z.add_weighted_edges_from(e4)
-
 	print(list(L.edges(data=True)))
 	print(list(Z.edges(data=True)))
 
