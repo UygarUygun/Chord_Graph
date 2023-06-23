@@ -47,28 +47,15 @@ class ChordGraph():
 		self.edges = input.edges
 		self.edgesWithData = input.edges(data=True)
 
-		# print("IMPORT EDGE DATA")
-		# print(self.edgesWithData)
-		# print()
-
 		self.nodes = input.nodes(data=True)
 
 		nodesWithData = list(self.G.nodes(data=True))
-		# print("NODES")
-		# print(nodesWithData)
-		# print()
 
 		for i in range(len(self.nodes)):
 			temp_node = ChordNode(tupleInput=nodesWithData[i], from_tuple=True)
 			self.nodeObjects.append(temp_node)
 
-		# for edge in self.edges:
-		# 	self.edgeLabels[edge] = 1
-		# 	print(edge)
-
 		for edge in self.edgesWithData:
-			# print('IMPORTED EDGE')
-			# print(edge[2]["weight"])
 			self.edgeLabels[(edge[0], edge[1])] = edge[2]["weight"]
 			# TODO: see if this part funtions for size determination
 			for nodeObj in self.nodeObjects:
@@ -77,7 +64,6 @@ class ChordGraph():
 
 		for node in self.nodeObjects:
 			self.nodeLabels[node.id] = (node.chord + '\n' + str(node.in_edge_count))
-			# self.nodeLabels[node.id] = node.in_edge_count
 
 	# THIS FUNCTION SHOULD COMBINE EDGE VALUES TOO
 	def combine_graphs(self, otherG : "ChordGraph"):
@@ -94,6 +80,8 @@ class ChordGraph():
 				# print(edge)
 				duplicateEdges.append(edge)
 				self.edgeLabels[edge] += 1
+				# TODO: edge labels consecutive bir sekilde artmayabilir
+				# edge labellarindaki bilgiyi dogru toplamam lazim
 
 		outG.remove_edges_from(duplicateEdges)
 		outG.add_edges_from(self.G.edges(data=True))
@@ -109,19 +97,19 @@ class ChordGraph():
 		return retFormatted
 
 
-	# this function deletes repeated nodes (nodes with the same bar and chord values)
-	# while deleting the edges connected to the deleted node are connected
-	# to the remaining node
+	# this function checks if there are duplicate nodes remaining on the graph
+	# there should not be but it can still be used as a fail safe mechanism
 	def check_duplicate_nodes(self):
 		for i in range(len(self.nodes)):
 			for j in range(i, len(self.nodes)):
 				if self.nodeObjects[i].is_duplicate(self.nodeObjects[j]):
 					# delete one node
 					# reconnect edges
-					print("Duplicate node found: " + str(self.nodeObjects[i].as_tuple()) + " and " + str(self.nodeObjects[j].as_tuple()))
+					print("Duplicate node found: " + str(self.nodeObjects[i].as_tuple()) +
+					      " and " + str(self.nodeObjects[j].as_tuple()))
 
 
-	# Assume that the node is a tuple that is (uniqueEdgeNo, {"chord" : "CHORDNAME", "bar" : number})
+
 	def add_sequential_node(self, node: ChordNode):
 		# starting case
 		if self.lastNode.is_empty:
@@ -140,11 +128,9 @@ class ChordGraph():
 			self.nodeObjects.append(node)
 			self.nodes.append(node.as_tuple())
 			self.lastNode = node
-			# print(node.id)
 			self.nodeLabels[node.id] = node.chord
 
 			self.G.add_nodes_from(self.nodes)
-			# self.G.add_edges_from(self.edges)
 			self.G.add_weighted_edges_from(self.edgesWithData)
 
 
@@ -161,13 +147,7 @@ class ChordGraph():
 
 
 		nodeCountsAtIndex = [0] * len(list(self.G.nodes))
-		# edgeColors = list(dict((tuple(e[0],e[1]): int(e[2]['weight']))) for e in list(self.G.edges(data=True)))
 		nodes = list(self.G.nodes)
-		# print(list(self.G.nodes(data=True)))
-		# print(self.nodes)
-		# print()
-		# print('NODE ATTRIBUTES')
-		# print()
 		pos = {}
 		nodeSizes = [node_size] * len(nodeCountsAtIndex)
 		nodeColors = [0] * len(nodeSizes)
@@ -175,10 +155,6 @@ class ChordGraph():
 		for i in range(len(self.nodeObjects)):
 			nodeSizes[i] += (self.nodeObjects[i].in_edge_count * node_size)
 			nodeColors[i] += self.nodeObjects[i].in_edge_count
-			# print(self.nodeObjects[i].in_edge_count)
-
-		# print("COLORMAP")
-		# print(nodeColors)
 
 		for i in range(len(self.nodeObjects)):
 			pos[self.nodeObjects[i].id] = (self.nodeObjects[i].bar,
@@ -187,7 +163,7 @@ class ChordGraph():
 
 		self.p = nx.draw_networkx_nodes(
 			self.G, pos, node_size=nodeSizes, nodelist=nodes,
-			node_color=nodeColors, alpha=0.7
+			node_color=nodeColors, alpha=0.4
 		)
 		nx.draw_networkx_labels(
 			self.G, pos, labels=self.nodeLabels
@@ -196,9 +172,6 @@ class ChordGraph():
 			self.G, pos, nodelist=self.nodes, alpha=0.5,
 			width=1, node_size=node_size*2
 		)
-		# print('DEGREES')
-		# print(dict(self.G.in_degree))
-		# print()
 
 		nx.draw_networkx_edge_labels(
 			self.G, pos, edge_labels=self.edgeLabels, label_pos=0.6
@@ -207,10 +180,9 @@ class ChordGraph():
 		ax = plt.gca()
 		ax.margins(0)
 		plt.tight_layout()
-		# plt.axis("off")
+		plt.axis("off")
 		plt.suptitle(plot_title)
 		plt.draw()
-		# plt.show()
 
 	def display(self, str):
 		plt.show()
