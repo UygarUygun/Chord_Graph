@@ -23,7 +23,6 @@ class ChordNode():
 		ret: tuple = (self.id, {"chord": self.chord, "bar": self.bar})
 		return ret
 
-
 	def is_duplicate(self, otherNode: "ChordNode"):
 		if otherNode.id != self.id and otherNode.chord == self.chord and otherNode.bar == self.bar:
 			return True
@@ -65,7 +64,6 @@ class ChordGraph():
 		for node in self.nodeObjects:
 			self.nodeLabels[node.id] = (node.chord + '\n' + str(node.in_edge_count))
 
-	# THIS FUNCTION SHOULD COMBINE EDGE VALUES TOO
 	def combine_graphs(self, otherG : "ChordGraph"):
 		outG = nx.DiGraph()
 		duplicateEdges = []
@@ -73,15 +71,10 @@ class ChordGraph():
 		# if not a duplicate edge still add the edge to the new list
 		# output list should preserve all edges between nodes
 		# but duplicate edges will be combined by increasing the weight
-
 		for edge in self.edges:
-			# print("EDGE CHECK")
 			if edge in otherG.G.edges:
-				# print(edge)
 				duplicateEdges.append(edge)
 				self.edgeLabels[edge] += 1
-				# TODO: edge labels consecutive bir sekilde artmayabilir
-				# edge labellarindaki bilgiyi dogru toplamam lazim
 
 		outG.remove_edges_from(duplicateEdges)
 		outG.add_edges_from(self.G.edges(data=True))
@@ -103,8 +96,6 @@ class ChordGraph():
 		for i in range(len(self.nodes)):
 			for j in range(i, len(self.nodes)):
 				if self.nodeObjects[i].is_duplicate(self.nodeObjects[j]):
-					# delete one node
-					# reconnect edges
 					print("Duplicate node found: " + str(self.nodeObjects[i].as_tuple()) +
 					      " and " + str(self.nodeObjects[j].as_tuple()))
 
@@ -145,7 +136,6 @@ class ChordGraph():
 
 		plt.figure(figsize=fig_size, frameon=False)
 
-
 		nodeCountsAtIndex = [0] * len(list(self.G.nodes))
 		nodes = list(self.G.nodes)
 		pos = {}
@@ -183,6 +173,3 @@ class ChordGraph():
 		plt.axis("off")
 		plt.suptitle(plot_title)
 		plt.draw()
-
-	def display(self, str):
-		plt.show()
