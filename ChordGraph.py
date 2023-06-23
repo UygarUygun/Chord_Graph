@@ -1,5 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.axes as axs
+import matplotlib.transforms as trns
 import itertools
 
 # A convenience class to get information about nodes of the graph
@@ -45,16 +47,16 @@ class ChordGraph():
 		self.edges = input.edges
 		self.edgesWithData = input.edges(data=True)
 
-		print("IMPORT EDGE DATA")
-		print(self.edgesWithData)
-		print()
+		# print("IMPORT EDGE DATA")
+		# print(self.edgesWithData)
+		# print()
 
 		self.nodes = input.nodes(data=True)
 
 		nodesWithData = list(self.G.nodes(data=True))
-		print("NODES")
-		print(nodesWithData)
-		print()
+		# print("NODES")
+		# print(nodesWithData)
+		# print()
 
 		for i in range(len(self.nodes)):
 			temp_node = ChordNode(tupleInput=nodesWithData[i], from_tuple=True)
@@ -65,8 +67,8 @@ class ChordGraph():
 		# 	print(edge)
 
 		for edge in self.edgesWithData:
-			print('IMPORTED EDGE')
-			print(edge[2]["weight"])
+			# print('IMPORTED EDGE')
+			# print(edge[2]["weight"])
 			self.edgeLabels[(edge[0], edge[1])] = edge[2]["weight"]
 			# TODO: see if this part funtions for size determination
 			for nodeObj in self.nodeObjects:
@@ -87,9 +89,9 @@ class ChordGraph():
 		# but duplicate edges will be combined by increasing the weight
 
 		for edge in self.edges:
-			print("EDGE CHECK")
+			# print("EDGE CHECK")
 			if edge in otherG.G.edges:
-				print(edge)
+				# print(edge)
 				duplicateEdges.append(edge)
 				self.edgeLabels[edge] += 1
 
@@ -153,36 +155,39 @@ class ChordGraph():
 			self.add_sequential_node(tempNode)
 
 
-	def visualize(self, node_size=250, node_color="tab:red", y_offset=0.005, plot_title=""):
+	def visualize(self, node_size=250, node_color="tab:red", y_offset=0.005, plot_title="", fig_size=(19, 7)):
+
+		plt.figure(figsize=fig_size, frameon=False)
+
 
 		nodeCountsAtIndex = [0] * len(list(self.G.nodes))
 		# edgeColors = list(dict((tuple(e[0],e[1]): int(e[2]['weight']))) for e in list(self.G.edges(data=True)))
 		nodes = list(self.G.nodes)
-		print(list(self.G.nodes(data=True)))
-		print(self.nodes)
-		print()
+		# print(list(self.G.nodes(data=True)))
+		# print(self.nodes)
+		# print()
+		# print('NODE ATTRIBUTES')
+		# print()
 		pos = {}
-		print('NODE ATTRIBUTES')
-		print()
 		nodeSizes = [node_size] * len(nodeCountsAtIndex)
 		nodeColors = [0] * len(nodeSizes)
 
 		for i in range(len(self.nodeObjects)):
 			nodeSizes[i] += (self.nodeObjects[i].in_edge_count * node_size)
 			nodeColors[i] += self.nodeObjects[i].in_edge_count
-			print(self.nodeObjects[i].in_edge_count)
+			# print(self.nodeObjects[i].in_edge_count)
 
-		print("COLORMAP")
-		print(nodeColors)
+		# print("COLORMAP")
+		# print(nodeColors)
 
 		for i in range(len(self.nodeObjects)):
 			pos[self.nodeObjects[i].id] = (self.nodeObjects[i].bar,
 			                               nodeCountsAtIndex[self.nodeObjects[i].bar])
 			nodeCountsAtIndex[self.nodeObjects[i].bar] += y_offset
 
-		nx.draw_networkx_nodes(
+		self.p = nx.draw_networkx_nodes(
 			self.G, pos, node_size=nodeSizes, nodelist=nodes,
-			node_color=nodeColors
+			node_color=nodeColors, alpha=0.7
 		)
 		nx.draw_networkx_labels(
 			self.G, pos, labels=self.nodeLabels
@@ -191,9 +196,9 @@ class ChordGraph():
 			self.G, pos, nodelist=self.nodes, alpha=0.5,
 			width=1, node_size=node_size*2
 		)
-		print('DEGREES')
-		print(dict(self.G.in_degree))
-		print()
+		# print('DEGREES')
+		# print(dict(self.G.in_degree))
+		# print()
 
 		nx.draw_networkx_edge_labels(
 			self.G, pos, edge_labels=self.edgeLabels, label_pos=0.6
@@ -202,6 +207,10 @@ class ChordGraph():
 		ax = plt.gca()
 		ax.margins(0)
 		plt.tight_layout()
-		plt.axis("off")
+		# plt.axis("off")
 		plt.suptitle(plot_title)
+		plt.draw()
+		# plt.show()
+
+	def display(self, str):
 		plt.show()

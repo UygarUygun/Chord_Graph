@@ -13,15 +13,50 @@ chs3 = 'Am D C C C G'
 chs4 = 'Am C D E Am G Bm'
 chs5 = 'Am A D E C G Bm C'
 
-TESTMODE = True
+TESTMODE = False
+OTHERTESTMODE = False
 
-# Driver code
-# G = cg.ChordGraph()
-# G.addSequentialNode((0, {"chord": "Am", "bar": 0}))
-# G.addSequentialNode((1, {"chord": "E", "bar": 1}))
-# G.addSequentialNode((2, {"chord": "Am", "bar": 2}))
-# G.addSequentialNode((3, {"chord": "E", "bar": 3}))
-# G.visualize()
+
+lines = []
+graphObjs = []
+
+
+with open('songs2.txt') as f:
+	lines = f.readlines()
+	print(lines)
+	f.close()
+
+name = ''
+artist = ''
+chordseq = ''
+for line in lines:
+	if line.startswith('+'):
+		name = line[1:-1]
+	elif line.startswith('-'):
+		artist = line[1:-1]
+	elif line[0].isspace():
+		print('end of song ' + name + ' from ' + artist)
+	else:
+		chordseq = line.removesuffix('\n')
+		tempChordGraph = cg.ChordGraph()
+		tempChordGraph.chord_parser(chordseq)
+		graphObjs.append(tempChordGraph)
+		print(name + ' ' + artist)
+		tempChordGraph.visualize(plot_title=(name + ' ' + artist))
+		# tempChordGraph.display(name + ' ' + artist)
+
+n=0
+tempG = graphObjs[0]
+for g in graphObjs[1:len(graphObjs)]:
+	tempG = tempG.combine_graphs(g)
+	print(n)
+	n =n+1
+
+tempG.visualize(plot_title='all songs combined')
+
+plt.show()
+
+
 
 if TESTMODE:
 	testG1 = cg.ChordGraph()
@@ -60,7 +95,7 @@ if TESTMODE:
 	fin.check_duplicate_nodes()
 	fin.visualize()
 
-if not TESTMODE:
+if not TESTMODE and OTHERTESTMODE:
 	print()
 	L = nx.DiGraph()
 	Z = nx.DiGraph()
